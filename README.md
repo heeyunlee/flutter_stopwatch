@@ -8,4 +8,5 @@
 
 |    iOS    |    Android    |
 |:---:|:---:|
-|<video src="https://user-images.githubusercontent.com/32585133/222534496-4e033646-30dd-4c62-a8c3-9fc067ae43a5.mov">|<video src="https://user-images.githubusercontent.com/32585133/222534576-6db5319e-9ed8-453b-b911-00f6eceb6458.mov">|
+|<video src="https://user-images.githubusercontent.com/32585133/222543928-2091cf71-c240-4a3e-be72-6e34ae1dfdac.mov">|<video src="https://user-images.githubusercontent.com/32585133/222543877-66e1fb29-8b20-439b-a21d-fc36c2e0acb7.mov">|
+
