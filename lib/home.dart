@@ -11,11 +11,54 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Duration duration = Duration.zero;
-  Timer? timer;
+  /// Current elapsed time of the stopwatch
+  Duration elapsedTime = Duration.zero;
+
+  /// All the recorded laps
   List<Duration> laps = [];
 
+  /// [Timer] that can be used to add time to [elapsedTime]
+  Timer? timer;
+
+  /// Checks if the [timer] is active. Set to `false` if [timer] is null
   bool get isTimerActive => timer?.isActive ?? false;
+
+  /// If the elapsed time is more than 0 AND the timer is active, we record a
+  /// new lap. If the elapsed time is more than 0 AND the timer is not active,
+  /// we reset everything (set [elapsedTime] to zero, [laps] to empty list, and
+  /// cancel and get rid of the [timer])
+  void recordLapsOrReset() {
+    if (elapsedTime > Duration.zero && isTimerActive) {
+      laps.insert(0, elapsedTime);
+    } else if (elapsedTime > Duration.zero && !isTimerActive) {
+      setState(() {
+        laps = [];
+        timer?.cancel();
+        timer = null;
+        elapsedTime = Duration.zero;
+      });
+    }
+  }
+
+  /// If the [timer] is active, cancel and remove it, and if the [timer] is not
+  /// active, initialize a new [Timer]
+  void startOrStop() {
+    if (isTimerActive) {
+      setState(() {
+        timer?.cancel();
+        timer = null;
+      });
+    } else {
+      timer = Timer.periodic(
+        const Duration(milliseconds: 10),
+        (_) {
+          setState(() {
+            elapsedTime += const Duration(milliseconds: 10);
+          });
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,13 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: const BorderRadius.all(Radius.circular(16)),
               ),
               height: 240,
-              child: FormattedTime(time: duration),
+              child: FormattedTime(time: elapsedTime),
             ),
             Expanded(
               child: ListView.separated(
-                separatorBuilder: (context, index) {
-                  return const Divider();
-                },
+                separatorBuilder: (_, __) => const Divider(),
                 shrinkWrap: true,
                 itemCount: laps.length,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -64,85 +105,67 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Row(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    if (duration > Duration.zero && isTimerActive) {
-                      laps.insert(0, duration);
-                    } else if (duration > Duration.zero && !isTimerActive) {
-                      laps = [];
-                      timer?.cancel();
-                      setState(() {
-                        timer = null;
-                        duration = Duration.zero;
-                      });
-                    }
-                  },
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(24)),
-                      color: duration < Duration.zero
-                          ? Colors.black
-                          : Colors.grey[200],
-                    ),
-                    child: Center(
-                      child: Text(
-                        duration > Duration.zero && !isTimerActive
-                            ? 'Reset'
-                            : 'Lap',
-                        style: TextStyle(
-                          color: duration > Duration.zero
-                              ? Colors.black
-                              : Colors.grey,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                  ),
+                CustomButton(
+                  onTap: recordLapsOrReset,
+                  label: elapsedTime > Duration.zero && !isTimerActive
+                      ? 'Reset'
+                      : 'Lap',
+                  backgroundColor: elapsedTime < Duration.zero
+                      ? Colors.black
+                      : Colors.grey[200],
+                  labelColor:
+                      elapsedTime > Duration.zero ? Colors.black : Colors.grey,
                 ),
                 const Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    if (!isTimerActive) {
-                      timer = Timer.periodic(const Duration(milliseconds: 10),
-                          (timer) {
-                        setState(() {
-                          duration += const Duration(milliseconds: 10);
-                        });
-                      });
-                    } else {
-                      timer?.cancel();
-                      setState(() {
-                        timer = null;
-                      });
-                    }
-                  },
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(24)),
-                      color: isTimerActive
-                          ? Colors.redAccent[100]
-                          : Colors.greenAccent[100],
-                    ),
-                    child: Center(
-                      child: Text(
-                        isTimerActive ? 'Stop' : 'Start',
-                        style: TextStyle(
-                          color: isTimerActive
-                              ? Colors.redAccent[700]
-                              : Colors.greenAccent[700],
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                  ),
+                CustomButton(
+                  onTap: startOrStop,
+                  label: isTimerActive ? 'Stop' : 'Start',
+                  backgroundColor: isTimerActive
+                      ? Colors.redAccent[100]
+                      : Colors.greenAccent[100],
+                  labelColor: isTimerActive
+                      ? Colors.redAccent[700]
+                      : Colors.greenAccent[700],
                 ),
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomButton extends StatelessWidget {
+  const CustomButton({
+    required this.onTap,
+    required this.label,
+    this.backgroundColor,
+    this.labelColor,
+    super.key,
+  });
+
+  final VoidCallback onTap;
+  final String label;
+  final Color? backgroundColor;
+  final Color? labelColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 120,
+        height: 120,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(36)),
+          color: backgroundColor,
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(color: labelColor, fontSize: 24),
+          ),
         ),
       ),
     );
