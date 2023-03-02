@@ -1,16 +1,11 @@
 # flutter_stopwatch
 
-A new Flutter project.
+- [x] The app should have a start/stop functionality
+- [x] The app should display the running or elapsed time
+- [x] The app should have a lap functionality and display the list of times elapsed
+- [x] The app runs on both Android and iOS
+- [x] Add some unit tests
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+|    iOS    |    Android    |
+|:---:|:---:|
+|<video src="https://user-images.githubusercontent.com/32585133/222534496-4e033646-30dd-4c62-a8c3-9fc067ae43a5.mov">|<video src="https://user-images.githubusercontent.com/32585133/222534576-6db5319e-9ed8-453b-b911-00f6eceb6458.mov">|
